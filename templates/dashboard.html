@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - My Tasks{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>My Assigned Tasks</h1>
+    {% if user.is_staff %}
+    <a href="{% url 'task_create' %}" class="btn btn-success">Assign New Task</a>
+    {% endif %}
+</div>
+
+<div class="row">
+    {% for task in tasks %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title fw-bold">{{ task.title }}</h5>
+                <div class="mb-2">
+                    <span
+                        class="badge {% if task.status == 'TODO' %}bg-secondary{% elif task.status == 'DOING' %}bg-primary{% else %}bg-success{% endif %}">
+                        {{ task.get_status_display }}
+                    </span>
+                    <span
+                        class="badge {% if task.priority == 1 %}bg-danger{% elif task.priority == 2 %}bg-warning text-dark{% else %}bg-info text-dark{% endif %}">
+                        Priority: {{ task.get_priority_display }}
+                    </span>
+                </div>
+                <p class="card-text text-muted"> Due: {{ task.due_date|default:"No date set" }}</p>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'task_detail' task.pk %}" class="btn btn-sm btn-outline-primary">View Detail</a>
+                    <a href="{% url 'task_update' task.pk %}" class="btn btn-sm btn-outline-secondary">Update Status</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <p class="text-muted">No tasks assigned to you yet.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

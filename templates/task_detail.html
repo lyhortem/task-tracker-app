@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ task.title }} - Detail{% endblock %}
+
+{% block content %}
+<div class='card'>
+    <div class='card-header bg-white d-flex justify-content-between align-items-center'>
+        <h2 class='mb-0'>{{ task.title }}</h2>
+        <a href='{% url 'dashboard' %}' class='btn btn-outline-secondary btn-sm'>Back to Dashboard</a>
+    </div>
+    <div class='card-body p-4'>
+        <div class='row mb-4'>
+            <div class='col-md-6'>
+                <p><strong>Status:</strong>
+                    <span class='badge {% if task.status == 'TODO' %}bg-secondary{% elif task.status == 'DOING' %}bg-primary{% else %}bg-success{% endif %}'>
+                        {{ task.get_status_display }}
+                    </span>
+                </p>
+                <p><strong>Priority:</strong>
+                    <span class='badge {% if task.priority == 1 %}bg-danger{% elif task.priority == 2 %}bg-warning text-dark{% else %}bg-info text-dark{% endif %}'>
+                        {{ task.get_priority_display }}
+                    </span>
+                </p>
+                <p><strong>Assigned To:</strong>
+                    {% for u in task.assigned_to.all %}
+                    <span class='small'>{{ u.username }}{% if not forloop.last %}, {% endif %}</span>
+                    {% empty %}
+                    -
+                    {% endfor %}
+                </p>
+                <p><strong>Due Date:</strong> {{ task.due_date|default:'Not set' }}</p>
+            </div>
+            <div class='col-md-6 text-md-end text-muted small'>
+                <p>Assigned by: {{ task.assigned_by.username|default:'System' }}</p>
+                <p>Created: {{ task.created_at|date:'F j, Y, g:i a' }}</p>
+                <p>Last updated: {{ task.updated_at|date:'F j, Y, g:i a' }}</p>
+            </div>
+        </div>
+        <hr>
+        <h5>Description</h5>
+        <p class='card-text lead' style='white-space: pre-wrap;'>{{ task.description|default:'No description provided.' }}</p>
+
+        <div class='mt-4'>
+            <a href='{% url 'task_update' task.pk %}' class='btn btn-primary'>Update Status</a>
+            {% if user.is_staff %}
+            <a href='{% url 'task_edit' task.pk %}' class='btn btn-warning'>Full Edit (Admin)</a>
+            <a href='{% url 'task_delete' task.pk %}' class='btn btn-danger'>Delete Task</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

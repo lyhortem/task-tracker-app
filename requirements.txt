@@ -1,0 +1,4 @@
+Django==5.2.5
+gunicorn==25.0.1
+whitenoise==6.11.0
+python-dotenv
